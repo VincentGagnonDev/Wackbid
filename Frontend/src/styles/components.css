@@ -1,0 +1,89 @@
+/* Common card styles */
+.card {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(107, 255, 59, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  border-color: rgba(107, 255, 59, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: #6BFF3B;
+  color: #0B0B0F;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: rgba(107, 255, 59, 0.9);
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: #E6FFE6;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: 1px solid rgba(107, 255, 59, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-secondary:hover {
+  border-color: #6BFF3B;
+}
+
+/* Glow effect */
+.glow-text {
+  color: #6BFF3B;
+  text-shadow: 0 0 10px rgba(107, 255, 59, 0.5);
+}
+
+/* Container styles */
+.container-padding {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-padding {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Animation classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Layout utilities */
+.main-container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.grid-cols-auto-fit {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}

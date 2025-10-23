@@ -88,13 +88,14 @@ export function createAuctionTransaction(
 
   if (transferPolicyId) {
     console.log('🔒 Creating auction with TransferPolicy');
+    console.log('KioskOwnerCap ID:', kioskData.kioskOwnerCapId);
     tx.moveCall({
       target: `${PACKAGE_ID}::auction::create_auction_from_kiosk_with_lock`,
       typeArguments: [nftType, '0x2::sui::SUI'],
       arguments: [
         tx.object(AUCTION_HOUSE_ID),
         tx.object(kioskData.kioskId),
-        tx.object(kioskData.kioskOwnerCapId),
+        tx.object(String(kioskData.kioskOwnerCapId)), // Ensure it's a string
         tx.object(PLATFORM_KIOSK_ID),
         tx.object(transferPolicyId),
         tx.pure.id(nftObjectId),
@@ -105,13 +106,14 @@ export function createAuctionTransaction(
     });
   } else {
     console.log('📦 Creating auction without TransferPolicy');
+    console.log('KioskOwnerCap ID:', kioskData.kioskOwnerCapId);
     tx.moveCall({
       target: `${PACKAGE_ID}::auction::create_auction_from_kiosk`,
       typeArguments: [nftType, '0x2::sui::SUI'],
       arguments: [
         tx.object(AUCTION_HOUSE_ID),
         tx.object(kioskData.kioskId),
-        tx.object(kioskData.kioskOwnerCapId),
+        tx.object(String(kioskData.kioskOwnerCapId)), // Ensure it's a string
         tx.object(PLATFORM_KIOSK_ID),
         tx.pure.id(nftObjectId),
         tx.pure.u64(expiryTime),

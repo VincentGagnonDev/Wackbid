@@ -106,7 +106,7 @@ module contracts::auction {
     public entry fun create_auction_from_kiosk<T: store + key, CoinType>(
         auction_house: &AuctionHouse,
         user_kiosk: &mut sui::kiosk::Kiosk,
-        user_kiosk_cap: sui::kiosk::KioskOwnerCap,  // Take by value
+        user_kiosk_cap: &sui::kiosk::KioskOwnerCap,  // Take by reference
         platform_kiosk: &mut sui::kiosk::Kiosk,
         nft_id: ID,
         expiry_time: u64,
@@ -118,7 +118,7 @@ module contracts::auction {
         let creator_kiosk_id = sui::object::id(user_kiosk);
         
         // Take NFT from user's kiosk
-        let nft = sui::kiosk::take<T>(user_kiosk, &user_kiosk_cap, nft_id);
+        let nft = sui::kiosk::take<T>(user_kiosk, user_kiosk_cap, nft_id);
         
         // Create auction and share it
         let auction = create_auction<T, CoinType>(
@@ -133,9 +133,6 @@ module contracts::auction {
         );
         
         transfer::public_share_object(auction);
-        
-        // Return the kiosk cap to the sender
-        transfer::public_transfer(user_kiosk_cap, sui::tx_context::sender(ctx));
     }
 
     // Create auction with locked item (internal function)
@@ -185,7 +182,7 @@ module contracts::auction {
     public entry fun create_auction_from_kiosk_with_lock<T: store + key, CoinType>(
         auction_house: &AuctionHouse,
         user_kiosk: &mut sui::kiosk::Kiosk,
-        user_kiosk_cap: sui::kiosk::KioskOwnerCap,  // Take by value
+        user_kiosk_cap: &sui::kiosk::KioskOwnerCap,  // Take by reference
         platform_kiosk: &mut sui::kiosk::Kiosk,
         policy: &sui::transfer_policy::TransferPolicy<T>,
         nft_id: ID,
@@ -199,7 +196,7 @@ module contracts::auction {
         
         let nft = if (sui::kiosk::is_locked(user_kiosk, nft_id)) {
             // LOCKED: Must use list+purchase flow
-            sui::kiosk::list<T>(user_kiosk, &user_kiosk_cap, nft_id, 0);
+            sui::kiosk::list<T>(user_kiosk, user_kiosk_cap, nft_id, 0);
             let zero_coin = coin::zero<sui::sui::SUI>(ctx);
             let (item, request) = sui::kiosk::purchase<T>(user_kiosk, nft_id, zero_coin);
             
@@ -209,7 +206,7 @@ module contracts::auction {
             item
         } else {
             // NOT LOCKED: Can use simple take
-            sui::kiosk::take<T>(user_kiosk, &user_kiosk_cap, nft_id)
+            sui::kiosk::take<T>(user_kiosk, user_kiosk_cap, nft_id)
         };
         
         // Create auction and share it
@@ -226,9 +223,6 @@ module contracts::auction {
         );
         
         transfer::public_share_object(auction);
-        
-        // Return the kiosk cap to the sender
-        transfer::public_transfer(user_kiosk_cap, sui::tx_context::sender(ctx));
     }
 
     // Place bid

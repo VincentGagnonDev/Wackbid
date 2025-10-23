@@ -179,7 +179,8 @@ module contracts::auction {
         }
     }
 
-    // Entry function: Create auction from user's kiosk (locked NFT)
+    // Entry function: Create auction from user's kiosk (with TransferPolicy)
+    // Works for both locked and unlocked NFTs - owner can always take with their cap
     public entry fun create_auction_from_kiosk_with_lock<T: store + key, CoinType>(
         auction_house: &AuctionHouse,
         user_kiosk: &mut sui::kiosk::Kiosk,
@@ -195,15 +196,9 @@ module contracts::auction {
         // Store the creator's kiosk ID before taking the NFT
         let creator_kiosk_id = sui::object::id(user_kiosk);
         
-        // List the locked NFT for 0 SUI
-        sui::kiosk::list<T>(user_kiosk, &user_kiosk_cap, nft_id, 0);
-        
-        // Purchase it with 0 SUI to extract it
-        let zero_coin = coin::zero<sui::sui::SUI>(ctx);
-        let (nft, transfer_request) = sui::kiosk::purchase<T>(user_kiosk, nft_id, zero_coin);
-        
-        // Confirm the transfer request
-        sui::transfer_policy::confirm_request(policy, transfer_request);
+        // Owner can always take their NFT using the KioskOwnerCap
+        // This bypasses any locks - locks only apply to purchases by others
+        let nft = sui::kiosk::take<T>(user_kiosk, &user_kiosk_cap, nft_id);
         
         // Create auction and share it
         let auction = create_auction_with_lock<T, CoinType>(

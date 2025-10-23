@@ -93,7 +93,7 @@ export function createAuctionTransaction(
       arguments: [
         tx.object(AUCTION_HOUSE_ID),              // &AuctionHouse (shared)
         tx.object(kioskData.kioskId),             // &mut Kiosk (shared)
-        tx.object(kioskData.kioskOwnerCapId),     // &KioskOwnerCap (owned, passed by ref)
+        tx.object(kioskData.kioskOwnerCapId),     // KioskOwnerCap (taken by value, consumed)
         tx.object(PLATFORM_KIOSK_ID),             // &mut Kiosk (shared)
         tx.object(transferPolicyId),              // &TransferPolicy<T> (shared)
         tx.pure.id(nftObjectId),                  // ID (pure value)
@@ -110,7 +110,7 @@ export function createAuctionTransaction(
       arguments: [
         tx.object(AUCTION_HOUSE_ID),              // &AuctionHouse (shared)
         tx.object(kioskData.kioskId),             // &mut Kiosk (shared)
-        tx.object(kioskData.kioskOwnerCapId),     // &KioskOwnerCap (owned, passed by ref)
+        tx.object(kioskData.kioskOwnerCapId),     // KioskOwnerCap (taken by value, consumed)
         tx.object(PLATFORM_KIOSK_ID),             // &mut Kiosk (shared)
         tx.pure.id(nftObjectId),                  // ID (pure value)
         tx.pure.u64(expiryTime),                  // u64 (pure value)

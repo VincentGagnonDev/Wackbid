@@ -30,9 +30,9 @@ export default function CreateAuctionModal({ isOpen, onClose }: CreateAuctionMod
     setIsLoading(true);
 
     try {
-      // Validate inputs
-      if (!selectedNFT || !minimumBid || !auctionTitle.trim() || !durationMinutes) {
-        throw new Error('Please fill in all fields');
+      // Validate inputs (title is now optional)
+      if (!selectedNFT || !minimumBid || !durationMinutes) {
+        throw new Error('Please fill in all required fields');
       }
 
       const minutes = parseFloat(durationMinutes);
@@ -47,6 +47,12 @@ export default function CreateAuctionModal({ isOpen, onClose }: CreateAuctionMod
       if (!nft) {
         throw new Error('Selected NFT not found');
       }
+      
+      // Generate title from NFT name or type if not provided
+      const finalTitle = auctionTitle.trim() || 
+                        nft.name || 
+                        nft.type.split('::').pop() || 
+                        'NFT Auction';
 
       // NEW: Kiosk is now required for all auctions
       if (!nft.isInKiosk || !nft.kioskId || !nft.kioskOwnerCapId) {
@@ -124,7 +130,7 @@ export default function CreateAuctionModal({ isOpen, onClose }: CreateAuctionMod
         nft.type, 
         bidInMist, 
         endTime, 
-        auctionTitle,
+        finalTitle,
         kioskData,
         nft.isLocked ? transferPolicyId : undefined  // Only pass policy if locked
       );
@@ -317,18 +323,18 @@ export default function CreateAuctionModal({ isOpen, onClose }: CreateAuctionMod
                 {selectedNFTData && (
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Auction Title
+                      Auction Title (Optional)
                     </label>
                     <input
                       type="text"
                       value={auctionTitle}
                       onChange={(e) => setAuctionTitle(e.target.value)}
-                      placeholder={selectedNFTData.name || 'Enter auction title'}
+                      placeholder={selectedNFTData.name || selectedNFTData.type.split('::').pop() || 'Leave empty to use NFT name'}
                       className="w-full bg-wb-bg border border-wb-accent/20 rounded-lg px-4 py-2 focus:outline-none focus:border-wb-accent transition-colors"
                       disabled={isLoading}
                     />
                     <p className="text-xs text-wb-ink/60 mt-1">
-                      This will be displayed as the auction name
+                      Leave empty to use "{selectedNFTData.name || selectedNFTData.type.split('::').pop() || 'NFT name'}" as the title
                     </p>
                   </div>
                 )}
@@ -394,7 +400,7 @@ export default function CreateAuctionModal({ isOpen, onClose }: CreateAuctionMod
                   <button
                     type="submit"
                     className="flex-1 btn-primary"
-                    disabled={isLoading || !selectedNFT || !auctionTitle.trim() || !minimumBid || !durationMinutes}
+                    disabled={isLoading || !selectedNFT || !minimumBid || !durationMinutes}
                   >
                     {isLoading ? 'Creating...' : 'Create Auction'}
                   </button>

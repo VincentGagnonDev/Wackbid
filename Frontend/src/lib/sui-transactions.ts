@@ -98,6 +98,7 @@ export function createAuctionTransaction(
         tx.object(transferPolicyId),              // &TransferPolicy<T> (shared)
         tx.pure.id(nftObjectId),                  // ID (pure value)
         tx.pure.u64(expiryTime),                  // u64 (pure value)
+        tx.pure.string(title),                    // vector<u8> title
         tx.object(CLOCK_OBJECT_ID),               // &Clock (shared)
       ],
     });
@@ -113,6 +114,7 @@ export function createAuctionTransaction(
         tx.object(PLATFORM_KIOSK_ID),             // &mut Kiosk (shared)
         tx.pure.id(nftObjectId),                  // ID (pure value)
         tx.pure.u64(expiryTime),                  // u64 (pure value)
+        tx.pure.string(title),                    // vector<u8> title
         tx.object(CLOCK_OBJECT_ID),               // &Clock (shared)
       ],
     });

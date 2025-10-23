@@ -7,6 +7,7 @@ module contracts::auction {
     use sui::clock::{Self, Clock};
     use sui::event;
     use std::option::{Self, Option};
+    use std::string::{Self, String};
     use contracts::auction_house::{Self, AuctionHouse};
 
     // Error codes
@@ -34,6 +35,7 @@ module contracts::auction {
         highest_bid: Balance<CoinType>,
         expiry_time: u64,
         is_active: bool,
+        title: std::string::String,  // Custom title for the auction
     }
 
     // Events
@@ -42,6 +44,7 @@ module contracts::auction {
         item_id: ID,
         creator: address,
         expiry_time: u64,
+        title: std::string::String,
     }
 
     public struct BidPlaced has copy, drop {
@@ -66,6 +69,7 @@ module contracts::auction {
         creator_kiosk_id: ID,
         item: T,
         expiry_time: u64,
+        title: String,
         _clock: &Clock,
         ctx: &mut TxContext
     ): Auction<T, CoinType> {
@@ -82,6 +86,7 @@ module contracts::auction {
             item_id,
             creator: sui::tx_context::sender(ctx),
             expiry_time,
+            title,
         });
 
         Auction {
@@ -93,6 +98,7 @@ module contracts::auction {
             highest_bid: balance::zero<CoinType>(),
             expiry_time,
             is_active: true,
+            title,
         }
     }
 
@@ -104,6 +110,7 @@ module contracts::auction {
         platform_kiosk: &mut sui::kiosk::Kiosk,
         nft_id: ID,
         expiry_time: u64,
+        title: vector<u8>,
         clock: &Clock,
         ctx: &mut TxContext
     ) {
@@ -120,6 +127,7 @@ module contracts::auction {
             creator_kiosk_id,
             nft,
             expiry_time,
+            string::utf8(title),
             clock,
             ctx
         );
@@ -138,6 +146,7 @@ module contracts::auction {
         policy: &sui::transfer_policy::TransferPolicy<T>,
         item: T,
         expiry_time: u64,
+        title: String,
         _clock: &Clock,
         ctx: &mut TxContext
     ): Auction<T, CoinType> {
@@ -154,6 +163,7 @@ module contracts::auction {
             item_id,
             creator: sui::tx_context::sender(ctx),
             expiry_time,
+            title,
         });
 
         Auction {
@@ -165,6 +175,7 @@ module contracts::auction {
             highest_bid: balance::zero<CoinType>(),
             expiry_time,
             is_active: true,
+            title,
         }
     }
 
@@ -177,6 +188,7 @@ module contracts::auction {
         policy: &sui::transfer_policy::TransferPolicy<T>,
         nft_id: ID,
         expiry_time: u64,
+        title: vector<u8>,
         clock: &Clock,
         ctx: &mut TxContext
     ) {
@@ -201,6 +213,7 @@ module contracts::auction {
             policy,
             nft,
             expiry_time,
+            string::utf8(title),
             clock,
             ctx
         );
@@ -301,6 +314,7 @@ module contracts::auction {
             highest_bid,
             expiry_time: _,
             is_active: _,
+            title: _,
         } = auction;
         
         let auction_id = sui::object::uid_to_inner(&id);
@@ -381,6 +395,7 @@ module contracts::auction {
             highest_bid,
             expiry_time: _,
             is_active: _,
+            title: _,
         } = auction;
         
         let auction_id = sui::object::uid_to_inner(&id);
@@ -480,6 +495,7 @@ module contracts::auction {
             highest_bid,
             expiry_time: _,
             is_active: _,
+            title: _,
         } = auction;
         
         let auction_id = sui::object::uid_to_inner(&id);
@@ -559,6 +575,7 @@ module contracts::auction {
             highest_bid,
             expiry_time: _,
             is_active: _,
+            title: _,
         } = auction;
         
         let auction_id = sui::object::uid_to_inner(&id);
@@ -631,6 +648,7 @@ module contracts::auction {
             highest_bid,
             expiry_time: _,
             is_active: _,
+            title: _,
         } = auction;
         
         let auction_id = sui::object::uid_to_inner(&id);
@@ -719,6 +737,7 @@ module contracts::auction {
             highest_bid,
             expiry_time: _,
             is_active: _,
+            title: _,
         } = auction;
         
         let auction_id = sui::object::uid_to_inner(&id);

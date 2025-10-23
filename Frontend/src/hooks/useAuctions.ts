@@ -56,7 +56,7 @@ export function useAuctions() {
 
                 auctions.push({
                   id: parsedJson.auction_id,
-                  title: `Auction #${parsedJson.auction_id.substring(0, 8)}`,
+                  title: fields.title || parsedJson.title || nftType.split('::').pop() || 'NFT Auction',
                   description: 'NFT Auction',
                   creator: fields.creator || parsedJson.creator,
                   item_id: fields.item_id || parsedJson.item_id,
@@ -118,7 +118,7 @@ export function useAuction(auctionId: string | undefined) {
 
           return {
             id: auctionId,
-            title: `Auction #${auctionId.substring(0, 8)}`,
+            title: fields.title || nftType.split('::').pop() || 'NFT Auction',
             description: 'NFT Auction',
             creator: fields.creator,
             item_id: fields.item_id,

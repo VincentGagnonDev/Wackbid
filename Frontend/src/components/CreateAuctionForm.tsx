@@ -91,7 +91,7 @@ export function CreateAuctionForm({
         nftType,
         suiToMist(minBid),
         endTime,
-        title || `Auction for ${nftType.split('::').pop()}`,
+        title || nftType.split('::').pop() || 'NFT Auction',
         { kioskId, kioskOwnerCapId },
         isLocked ? transferPolicyId : undefined  // Only pass policy if locked
       );
@@ -139,7 +139,7 @@ export function CreateAuctionForm({
           disabled={isSubmitting}
           maxLength={100}
         />
-        <p className="mt-1 text-xs text-gray-500">Give your auction a memorable name</p>
+        <p className="mt-1 text-xs text-gray-500">Leave empty to use NFT name as title</p>
       </div>
 
       <div>

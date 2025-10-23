@@ -52,7 +52,7 @@ export async function findTransferPolicy(
  * @param nftType - Full type of the NFT
  * @param minimumBid - Minimum bid in MIST (not used in contract but for UI)
  * @param expiryTime - Unix timestamp in milliseconds
- * @param title - Auction title (not used in contract but for UI)
+ * @param title - Auction title
  * @param kioskData - User's kiosk info {kioskId, kioskOwnerCapId}
  * @param transferPolicyId - Optional transfer policy ID for locked NFTs
  */
@@ -83,39 +83,40 @@ export function createAuctionTransaction(
     platformKiosk: PLATFORM_KIOSK_ID,
     nftObjectId,
     expiryTime,
+    title,
   });
 
   if (transferPolicyId) {
-    console.log('🔒 Creating auction with locked NFT (entry function)');
+    console.log('🔒 Creating auction with TransferPolicy');
     tx.moveCall({
       target: `${PACKAGE_ID}::auction::create_auction_from_kiosk_with_lock`,
-      typeArguments: [nftType, '0x2::sui::SUI'], // T, CoinType
+      typeArguments: [nftType, '0x2::sui::SUI'],
       arguments: [
-        tx.object(AUCTION_HOUSE_ID),              // &AuctionHouse (shared)
-        tx.object(kioskData.kioskId),             // &mut Kiosk (shared)
-        tx.object(kioskData.kioskOwnerCapId),     // KioskOwnerCap (taken by value, consumed)
-        tx.object(PLATFORM_KIOSK_ID),             // &mut Kiosk (shared)
-        tx.object(transferPolicyId),              // &TransferPolicy<T> (shared)
-        tx.pure.id(nftObjectId),                  // ID (pure value)
-        tx.pure.u64(expiryTime),                  // u64 (pure value)
-        tx.pure.string(title),                    // vector<u8> title
-        tx.object(CLOCK_OBJECT_ID),               // &Clock (shared)
+        tx.object(AUCTION_HOUSE_ID),
+        tx.object(kioskData.kioskId),
+        tx.object(kioskData.kioskOwnerCapId),
+        tx.object(PLATFORM_KIOSK_ID),
+        tx.object(transferPolicyId),
+        tx.pure.id(nftObjectId),
+        tx.pure.u64(expiryTime),
+        tx.pure.string(title),
+        tx.object(CLOCK_OBJECT_ID),
       ],
     });
   } else {
-    console.log('📦 Creating auction with unlocked NFT (entry function)');
+    console.log('📦 Creating auction without TransferPolicy');
     tx.moveCall({
       target: `${PACKAGE_ID}::auction::create_auction_from_kiosk`,
-      typeArguments: [nftType, '0x2::sui::SUI'], // T, CoinType
+      typeArguments: [nftType, '0x2::sui::SUI'],
       arguments: [
-        tx.object(AUCTION_HOUSE_ID),              // &AuctionHouse (shared)
-        tx.object(kioskData.kioskId),             // &mut Kiosk (shared)
-        tx.object(kioskData.kioskOwnerCapId),     // KioskOwnerCap (taken by value, consumed)
-        tx.object(PLATFORM_KIOSK_ID),             // &mut Kiosk (shared)
-        tx.pure.id(nftObjectId),                  // ID (pure value)
-        tx.pure.u64(expiryTime),                  // u64 (pure value)
-        tx.pure.string(title),                    // vector<u8> title
-        tx.object(CLOCK_OBJECT_ID),               // &Clock (shared)
+        tx.object(AUCTION_HOUSE_ID),
+        tx.object(kioskData.kioskId),
+        tx.object(kioskData.kioskOwnerCapId),
+        tx.object(PLATFORM_KIOSK_ID),
+        tx.pure.id(nftObjectId),
+        tx.pure.u64(expiryTime),
+        tx.pure.string(title),
+        tx.object(CLOCK_OBJECT_ID),
       ],
     });
   }

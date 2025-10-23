@@ -180,9 +180,8 @@ module contracts::auction {
     }
 
     // Entry function: Create auction from user's kiosk (with TransferPolicy)
-    // Uses kiosk::take which works for PLACED items (owner can take their own items)
-    // NOTE: If NFT is truly LOCKED (has kiosk_lock_rule), this will fail
-    // In that case, LOCKED NFTs cannot be auctioned with current implementation
+    // For LOCKED NFTs, uses list+purchase flow to extract from kiosk
+    // The 0 SUI purchase satisfies kiosk_lock_rule but may fail with royalty rules
     public entry fun create_auction_from_kiosk_with_lock<T: store + key, CoinType>(
         auction_house: &AuctionHouse,
         user_kiosk: &mut sui::kiosk::Kiosk,
@@ -198,9 +197,20 @@ module contracts::auction {
         // Store the creator's kiosk ID before taking the NFT
         let creator_kiosk_id = sui::object::id(user_kiosk);
         
-        // Try to take the NFT - works for PLACED items
-        // If item is LOCKED (has kiosk_lock_rule), this will fail
-        let nft = sui::kiosk::take<T>(user_kiosk, &user_kiosk_cap, nft_id);
+        let nft = if (sui::kiosk::is_locked(user_kiosk, nft_id)) {
+            // LOCKED: Must use list+purchase flow
+            sui::kiosk::list<T>(user_kiosk, &user_kiosk_cap, nft_id, 0);
+            let zero_coin = coin::zero<sui::sui::SUI>(ctx);
+            let (item, request) = sui::kiosk::purchase<T>(user_kiosk, nft_id, zero_coin);
+            
+            // For 0-value transfers between own kiosks, just confirm
+            // This satisfies kiosk_lock_rule but may fail with royalty rules
+            sui::transfer_policy::confirm_request(policy, request);
+            item
+        } else {
+            // NOT LOCKED: Can use simple take
+            sui::kiosk::take<T>(user_kiosk, &user_kiosk_cap, nft_id)
+        };
         
         // Create auction and share it
         let auction = create_auction_with_lock<T, CoinType>(

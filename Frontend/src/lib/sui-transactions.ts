@@ -84,7 +84,13 @@ export function createAuctionTransaction(
     nftObjectId,
     expiryTime,
     title,
+    transferPolicyId: transferPolicyId || 'none',
   });
+  
+  console.log('🔍 Detailed object info:');
+  console.log('  - KioskID type:', typeof kioskData.kioskId);
+  console.log('  - KioskOwnerCapID type:', typeof kioskData.kioskOwnerCapId);
+  console.log('  - Are they the same?', kioskData.kioskId === kioskData.kioskOwnerCapId);
 
   if (transferPolicyId) {
     console.log('🔒 Creating auction with TransferPolicy');
